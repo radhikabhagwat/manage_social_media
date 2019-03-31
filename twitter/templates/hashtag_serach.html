@@ -4,16 +4,14 @@
 
 {% block managetwit %}
   <h2>Twitter Hash Tag</h2>
-  <form method="GET">
+  <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Submit</button>
   </form>
-{% if context.text_list %}
-  <p>{{context.text_list}}</p>
-  <div>{{text_list}}</div>
+{% if text_list %}
   {% for i in text_list %}
-    <h1>{{i}}</h1>
+    <p>{{i}}</p>
   {% endfor %}
 {% endif %}
 {% endblock %}

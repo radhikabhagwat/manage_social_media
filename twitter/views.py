@@ -23,7 +23,6 @@ class CredentialsView(generic.FormView):
 
 
     def form_valid(self, form):
-        print "credentail view get executed!!"
         access_token = self.request.POST['access_token']
         access_secret = self.request.POST['access_secret']
         consumer_key = self.request.POST['consumer_key']
@@ -45,7 +44,6 @@ class CredentialsView(generic.FormView):
                 consumer_secret=consumer_secret)
 
             tc.save()
-        print "tc===", tc
         return super(CredentialsView, self).form_valid(form)
 
 
@@ -53,25 +51,17 @@ class HashTagSearchView(generic.TemplateView):
     template_name = "hashtag_serach.html"
     form_class = forms.HashTagSearchForm
     success_url = reverse_lazy("twitter:hashsearch")
-    #context_object_name = 'context'
 
-    # model = TwitterCredentails
-
-    def form_valid(self, form, **kwargs):
-        return super(HashTagSearchView, self).form_valid(form,)
-
-    # def get(self, request, *args, **kwargs):
-    #     form = self.form()
-    #     return render(request,
-    #                   self.get_template(),
-    #                   {'form': form})
+    # def form_valid(self, form, **kwargs):
+    #     return super(HashTagSearchView, self).form_valid(form,)
 
     def get(self, request, *args, **kwargs):
-        #form = self.form()
-        #context = super(HashTagSearchView, self).get_context_data(**kwargs)
-        print "data===",request.GET
-        if self.request.GET.get('hash_tag'):
-            print "got hash tag======"
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid() and self.request.POST.get('hash_tag'):
             hash_tag = self.request.POST['hash_tag']
             text_list = []
             url = "https://api.twitter.com/1.1/search/tweets.json?q=" + hash_tag + "&count=2"
@@ -83,17 +73,12 @@ class HashTagSearchView(generic.TemplateView):
             try:
                 headeroauth = OAuth1(*t1)
                 # signature_type='auth_header')
-                print headeroauth.__dict__
                 response = requests.get(url, auth=headeroauth)
                 content = json.loads(response.content)
                 for comment in content['statuses']:
                     text_list.append(comment.get('text'))
-                #context['text_list']=text_list
-                #print "text_list===",context
             except Exception as e:
                 import traceback
-                print traceback.format_exc()
-            #print context
-        return render(request,
-                      self.template_name,
-                      {'text_list':text_list})
+        return render(request, self.template_name,
+                      {'form': form,'text_list':text_list})
+

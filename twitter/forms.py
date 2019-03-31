@@ -13,7 +13,7 @@ class CredentialsForm(forms.Form):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        print "cleaned_data===",cleaned_data
+        print ("cleaned_data===",cleaned_data)
 
 
 class HashTagSearchForm(forms.Form):
@@ -22,3 +22,4 @@ class HashTagSearchForm(forms.Form):
 
     def clean(self):
         cleaned_data = self.cleaned_data
+        print(cleaned_data)
